@@ -1,15 +1,50 @@
 import axios from "axios";
 
-const API_KEY = "your_openweather_api_key";
-const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+const API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY;
+const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
-export const getWeatherByCity = async (city: string) => {
-  const response = await axios.get(BASE_URL, {
+export const getWeatherByCity = async (city: string, lang: string = "en") => {
+  const response = await axios.get(`${BASE_URL}/weather`, {
     params: {
       q: city,
       appid: API_KEY,
-      units: "metric", // Для получения температуры в градусах Цельсия
+      units: "metric",
+      lang,
     },
   });
   return response.data;
+};
+
+export const getFiveDayForecast = async (city: string, lang: string = "en") => {
+  const response = await axios.get(`${BASE_URL}/forecast`, {
+    params: {
+      q: city,
+      appid: API_KEY,
+      units: "metric",
+      lang,
+    },
+  });
+  return response.data;
+};
+
+export const getWeatherByGeo = async (lat: number, lon: number) => {
+  const currentWeather = await axios.get(`${BASE_URL}/weather`, {
+    params: {
+      lat,
+      lon,
+      appid: API_KEY,
+      units: "metric",
+    },
+  });
+
+  const forecast = await axios.get(`${BASE_URL}/forecast`, {
+    params: {
+      lat,
+      lon,
+      appid: API_KEY,
+      units: "metric",
+    },
+  });
+
+  return { currentWeather: currentWeather.data, forecast: forecast.data };
 };
